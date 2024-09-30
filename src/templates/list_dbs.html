@@ -1,0 +1,16 @@
+<!-- src/templates/list_dbs.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Existing Databases</h2>
+{% if databases %}
+    <ul class="list-group">
+        {% for db in databases %}
+            <li class="list-group-item">{{ db }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No databases found.</p>
+{% endif %}
+{% endblock %}

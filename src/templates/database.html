@@ -1,0 +1,15 @@
+<!-- src/templates/database.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mt-4">Database: {{ db_name }}</h2>
+<div class="list-group">
+    <a href="{{ url_for('database', db_name=db_name) }}?action=create" class="list-group-item list-group-item-action">Create Record</a>
+    <a href="{{ url_for('database', db_name=db_name) }}?action=read" class="list-group-item list-group-item-action">Read Record</a>
+    <a href="{{ url_for('database', db_name=db_name) }}?action=update" class="list-group-item list-group-item-action">Update Record</a>
+    <a href="{{ url_for('database', db_name=db_name) }}?action=delete" class="list-group-item list-group-item-action">Delete Record</a>
+    <a href="{{ url_for('database', db_name=db_name) }}?action=list_keys" class="list-group-item list-group-item-action">List Keys</a>
+    <a href="{{ url_for('database', db_name=db_name) }}?action=query" class="list-group-item list-group-item-action">Query Database</a>
+</div>
+{% endblock %}

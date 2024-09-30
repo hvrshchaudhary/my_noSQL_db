@@ -1,0 +1,14 @@
+<!-- src/templates/delete.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Delete Record from Database: {{ db_name }}</h2>
+<form method="post" action="{{ url_for('database', db_name=db_name) }}?action=delete" onsubmit="return confirm('Are you sure you want to delete this record?');">
+    <div class="form-group">
+        <label for="key">Key:</label>
+        <input type="text" class="form-control" id="key" name="key" placeholder="Enter key to delete" required>
+    </div>
+    <button type="submit" class="btn btn-danger">Delete Record</button>
+</form>
+{% endblock %}

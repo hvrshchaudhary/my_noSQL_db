@@ -1,0 +1,33 @@
+<!-- src/templates/index.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mt-4">Existing Databases</h2>
+{% if databases %}
+    <ul class="list-group mb-4">
+        {% for db in databases %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ db }}
+                <div>
+                    <a href="{{ url_for('database', db_name=db) }}" class="btn btn-primary btn-sm">Manage</a>
+                    <form method="post" action="{{ url_for('delete_database_from_home', db_name=db) }}" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete the database \'{{ db }}\'? This action cannot be undone.');">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No databases found. Please create a new database.</p>
+{% endif %}
+
+<h2>Create a New Database</h2>
+<form method="post" action="{{ url_for('index') }}">
+    <div class="form-group">
+        <label for="db_name">Database Name:</label>
+        <input type="text" class="form-control" id="db_name" name="db_name" placeholder="Enter database name" required>
+    </div>
+    <button type="submit" class="btn btn-success">Create Database</button>
+</form>
+{% endblock %}

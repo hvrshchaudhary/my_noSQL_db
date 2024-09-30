@@ -1,0 +1,22 @@
+/* src/static/css/styles.css */
+
+/* Center the main heading */
+h1 {
+    margin-bottom: 30px;
+}
+
+/* Style for the database management buttons */
+.list-group-item-action {
+    cursor: pointer;
+}
+
+.list-group-item d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Adjust spacing between buttons */
+.list-group-item .btn {
+    margin-left: 5px;
+}

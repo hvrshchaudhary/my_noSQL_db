@@ -1,0 +1,16 @@
+<!-- src/templates/list_keys.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>List Keys in Database: {{ selected_db }}</h2>
+{% if keys %}
+    <ul class="list-group">
+        {% for key in keys %}
+            <li class="list-group-item">{{ key }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No keys found in database '{{ selected_db }}'.</p>
+{% endif %}
+{% endblock %}

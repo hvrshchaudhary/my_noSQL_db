@@ -1,0 +1,19 @@
+<!-- src/templates/delete_db.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Delete Database</h2>
+<form method="post">
+    <div class="form-group">
+        <label for="db_name">Select Database:</label>
+        <select class="form-control" id="db_name" name="db_name" required>
+            <option value="" disabled selected>Select a database</option>
+            {% for db in databases %}
+                <option value="{{ db }}">{{ db }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-danger">Delete Database</button>
+</form>
+{% endblock %}

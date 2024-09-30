@@ -1,0 +1,14 @@
+{
+    "record1": {
+        "field1": "value1",
+        "field2": 123
+    },
+    "record2": {
+        "field1": "value2",
+        "field2": 456
+    },
+    "record3": {
+        "field1": "value3",
+        "field2": 789
+    }
+}

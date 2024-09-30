@@ -1,0 +1,28 @@
+<!-- src/templates/create.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Create Record in Database: {{ db_name }}</h2>
+
+<form method="post" action="{{ url_for('database', db_name=db_name) }}?action=create">
+    <div class="form-group">
+        <label for="key">Key:</label>
+        <input type="text" class="form-control" id="key" name="key" required>
+    </div>
+    <div class="form-group">
+        <label for="value">Value (JSON):</label>
+        <textarea class="form-control" id="value" name="value" rows="5" required></textarea>
+        <small class="form-text text-muted">
+            Enter a valid JSON object like:<br>
+            {"field": "value"}<br>
+        </small>
+    </div>
+    <button type="submit" class="btn btn-success">Create Record</button>
+</form>
+
+<hr>
+
+<p>Or, add multiple records at once:</p>
+<a href="{{ url_for('database', db_name=db_name) }}?action=create_multiple" class="btn btn-secondary">Add Multiple Records</a>
+{% endblock %}

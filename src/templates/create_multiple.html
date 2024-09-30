@@ -1,0 +1,55 @@
+<!-- src/templates/create_multiple.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Add Multiple Records to Database: {{ db_name }}</h2>
+
+<form method="post" action="{{ url_for('database', db_name=db_name) }}?action=create_multiple">
+    <div class="form-group">
+        <button type="button" class="btn btn-secondary mb-2" id="generate-btn">Generate Sample JSON</button>
+    </div>
+    <div class="form-group">
+        <label for="records">Records (JSON):</label>
+        <textarea class="form-control" id="records" name="records" rows="10" required></textarea>
+        <small class="form-text text-muted">
+            Enter a JSON object with multiple key-value pairs.<br>
+            Example:<br>
+            {<br>
+            &nbsp;&nbsp;"key1": {"field": "value1"},<br>
+            &nbsp;&nbsp;"key2": {"field": "value2"}<br>
+            }
+        </small>
+    </div>
+    <button type="submit" class="btn btn-success">Create Records</button>
+</form>
+
+<hr>
+
+<p>Or, add a single record:</p>
+<a href="{{ url_for('database', db_name=db_name) }}?action=create" class="btn btn-primary">Add Single Record</a>
+
+<!-- JavaScript to Handle Generate Button -->
+<script>
+    document.getElementById('generate-btn').addEventListener('click', function() {
+        var dbName = "{{ db_name }}".toLowerCase();
+        var sampleData = '';
+
+        if (dbName === 'users') {
+            sampleData = `{
+    "user1": {"name": "Alice", "age": 30},
+    "user2": {"name": "Bob", "age": 25},
+    "user3": {"name": "Charlie", "age": 35}
+}`;
+        } else {
+            sampleData = `{
+    "record1": {"field1": "value1", "field2": 123},
+    "record2": {"field1": "value2", "field2": 456},
+    "record3": {"field1": "value3", "field2": 789}
+}`;
+        }
+
+        document.getElementById('records').value = sampleData;
+    });
+</script>
+{% endblock %}

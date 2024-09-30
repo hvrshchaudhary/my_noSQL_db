@@ -1,0 +1,50 @@
+<!-- src/templates/query.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Query Database: {{ db_name }}</h2>
+<form method="post" action="{{ url_for('database', db_name=db_name) }}?action=query">
+    <div class="form-group">
+        <label for="field">Field:</label>
+        <input type="text" class="form-control" id="field" name="field" placeholder="Enter field name" required>
+    </div>
+    <div class="form-group">
+        <label for="operator">Operator:</label>
+        <select class="form-control" id="operator" name="operator" required>
+            <option value="" disabled selected>Select an operator</option>
+            <option value="=">=</option>
+            <option value="!=">!=</option>
+            <option value=">">&gt;</option>
+            <option value="<">&lt;</option>
+            <option value=">=">&gt;=</option>
+            <option value="<=">&lt;=</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="value">Value:</label>
+        <input type="text" class="form-control" id="value" name="value" placeholder="Enter value to compare" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Run Query</button>
+</form>
+
+{% if results %}
+    <h3 class="mt-4">Query Results:</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Record</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, record in results.items() %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td><pre>{{ record | tojson(indent=4) }}</pre></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}
