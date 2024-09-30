@@ -4,6 +4,11 @@
 
 {% block content %}
 <h2 class="mt-4">Database: {{ db_name }}</h2>
+
+{% if not in_transaction %}
+    <a href="{{ url_for('database', db_name=db_name, action='begin_transaction', next=current_url) }}" class="btn btn-primary mb-3">Begin Transaction</a>
+{% endif %}
+
 <div class="list-group">
     <a href="{{ url_for('database', db_name=db_name) }}?action=create" class="list-group-item list-group-item-action">Create Record</a>
     <a href="{{ url_for('database', db_name=db_name) }}?action=read" class="list-group-item list-group-item-action">Read Record</a>

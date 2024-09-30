@@ -3,15 +3,21 @@
 import json
 import os
 import threading
+import copy
 
 class SimpleNoSQLDB:
-    def __init__(self, db_file):
+    def __init__(self, db_file, in_transaction=False, transaction_store=None):
         """
-        Initialize the SimpleNoSQLDB with the specified database file.
+        Initialize the SimpleNoSQLDB with the specified database file and transaction state.
         """
         self.db_file = db_file
         self.lock = threading.Lock()
         self._load_data()
+        self.in_transaction = in_transaction
+        if in_transaction and transaction_store is not None:
+            self.transaction_store = transaction_store
+        else:
+            self.transaction_store = None
 
     def _load_data(self):
         """Load data from the JSON file into the in-memory store."""
@@ -25,44 +31,84 @@ class SimpleNoSQLDB:
             self.store = {}
 
     def _save_data(self):
-        """Save the in-memory store to the JSON file."""
-        with open(self.db_file, 'w') as f:
+        """Save the in-memory store to the JSON file atomically."""
+        dir_name = os.path.dirname(self.db_file)
+        temp_file = os.path.join(dir_name, 'temp.json')
+        with open(temp_file, 'w') as f:
             json.dump(self.store, f, indent=4)
+        os.replace(temp_file, self.db_file)
+
+    def begin_transaction(self):
+        """Begin a new transaction."""
+        with self.lock:
+            if not self.in_transaction:
+                self.in_transaction = True
+                self.transaction_store = copy.deepcopy(self.store)
+            else:
+                raise Exception("Transaction already in progress.")
+
+    def commit(self):
+        """Commit the current transaction."""
+        with self.lock:
+            if self.in_transaction:
+                self.store = self.transaction_store
+                self._save_data()
+                self.transaction_store = None
+                self.in_transaction = False
+            else:
+                raise Exception("No transaction in progress.")
+
+    def rollback(self):
+        """Rollback the current transaction."""
+        with self.lock:
+            if self.in_transaction:
+                self.transaction_store = None
+                self.in_transaction = False
+            else:
+                raise Exception("No transaction in progress.")
 
     def create(self, key, value):
         """Create a new key-value pair in the database."""
         with self.lock:
-            if key in self.store:
+            target_store = self.transaction_store if self.in_transaction else self.store
+            if key in target_store:
                 raise KeyError(f"Key '{key}' already exists.")
-            self.store[key] = value
-            self._save_data()
+            target_store[key] = value
+            if not self.in_transaction:
+                self._save_data()
 
     def read(self, key):
         """Read the value associated with a key."""
         with self.lock:
-            return self.store.get(key, None)
+            target_store = self.transaction_store if self.in_transaction else self.store
+            return target_store.get(key, None)
 
     def update(self, key, value):
         """Update the value of an existing key."""
         with self.lock:
-            if key not in self.store:
+            target_store = self.transaction_store if self.in_transaction else self.store
+            if key not in target_store:
                 raise KeyError(f"Key '{key}' does not exist.")
-            self.store[key] = value
-            self._save_data()
+            target_store[key] = value
+            if not self.in_transaction:
+                self._save_data()
 
     def delete(self, key):
         """Delete a key-value pair from the database."""
         with self.lock:
-            if key in self.store:
-                del self.store[key]
-                self._save_data()
+            target_store = self.transaction_store if self.in_transaction else self.store
+            if key in target_store:
+                del target_store[key]
+                if not self.in_transaction:
+                    self._save_data()
             else:
                 raise KeyError(f"Key '{key}' does not exist.")
 
     def list_keys(self):
         """List all keys in the database."""
         with self.lock:
-            return list(self.store.keys())
+            target_store = self.transaction_store if self.in_transaction else self.store
+            return list(target_store.keys())
 
     def query(self, field, operator, value):
         """
@@ -70,8 +116,9 @@ class SimpleNoSQLDB:
         Supported operators: '=', '!=', '>', '<', '>=', '<='.
         """
         with self.lock:
+            target_store = self.transaction_store if self.in_transaction else self.store
             results = {}
-            for key, record in self.store.items():
+            for key, record in target_store.items():
                 if isinstance(record, dict):
                     record_value = record.get(field)
                     if record_value is None:
@@ -152,14 +199,14 @@ class DatabaseManager:
         """
         return [f[:-5] for f in os.listdir(self.databases_dir) if f.endswith('.json')]
 
-    def get_db(self, db_name):
+    def get_db(self, db_name, in_transaction=False, transaction_store=None):
         """
-        Retrieve a SimpleNoSQLDB instance for the specified database.
+        Retrieve a SimpleNoSQLDB instance for the specified database with transaction state.
         """
         db_file = self._get_db_file(db_name)
         if not os.path.exists(db_file):
             raise FileNotFoundError(f"Database '{db_name}' does not exist.")
-        return SimpleNoSQLDB(db_file)
+        return SimpleNoSQLDB(db_file, in_transaction, transaction_store)
 
     def _get_db_file(self, db_name):
         """

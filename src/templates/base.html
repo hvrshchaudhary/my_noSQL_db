@@ -22,26 +22,35 @@
         <!-- Navigation Links -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <!-- Removed Home Link -->
-                <!-- Retained Create Database and List Databases if needed -->
-                <!-- Based on your latest instructions, we'll remove Create Database and List Databases links as well -->
-                <!-- Assuming that Create Database is handled on the Home Page, and List Databases is also displayed there -->
-                <!-- Therefore, the navbar will only contain the Home link, which is now handled by the brand link -->
+                <!-- Additional Navigation Links if needed -->
             </ul>
         </div>
     </nav>
 
     <div class="container mt-4">
         <h1 class="text-center">NoSQL Database Interface</h1>
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="alert alert-info">
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
-                    {% endfor %}
-                </div>
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
             {% endif %}
         {% endwith %}
+
+        <!-- Transaction Controls -->
+        {% if in_transaction and db_name %}
+            <div class="alert alert-warning text-center">
+                <strong>Transaction in progress on database '{{ db_name }}'.</strong>
+                <a href="{{ url_for('database', db_name=db_name, action='commit', next=current_url) }}" class="btn btn-success btn-sm">Commit</a>
+                <a href="{{ url_for('database', db_name=db_name, action='rollback', next=current_url) }}" class="btn btn-danger btn-sm">Rollback</a>
+            </div>
+        {% endif %}
+
         {% block content %}{% endblock %}
     </div>
     <!-- Bootstrap JS and dependencies (Optional for functionality) -->

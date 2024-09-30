@@ -5,6 +5,14 @@
 {% block content %}
 <h2>Create Record in Database: {{ db_name }}</h2>
 
+{% if not in_transaction %}
+    <div class="alert alert-info">
+        <strong>No active transaction.</strong> Please 
+        <a href="{{ url_for('database', db_name=db_name, action='begin_transaction', next=current_url) }}" class="btn btn-primary btn-sm">Start Transaction</a> 
+        to make changes.
+    </div>
+{% endif %}
+
 <form method="post" action="{{ url_for('database', db_name=db_name) }}?action=create">
     <div class="form-group">
         <label for="key">Key:</label>
@@ -18,7 +26,11 @@
             {"field": "value"}<br>
         </small>
     </div>
-    <button type="submit" class="btn btn-success">Create Record</button>
+    {% if in_transaction %}
+        <button type="submit" class="btn btn-success">Create Record</button>
+    {% else %}
+        <button type="button" class="btn btn-secondary" disabled>Create Record</button>
+    {% endif %}
 </form>
 
 <hr>

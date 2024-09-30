@@ -3,7 +3,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>List Keys in Database: {{ selected_db }}</h2>
+<h2>List Keys in Database: {{ db_name }}</h2>
+
 {% if keys %}
     <ul class="list-group">
         {% for key in keys %}
@@ -11,6 +12,6 @@
         {% endfor %}
     </ul>
 {% else %}
-    <p>No keys found in database '{{ selected_db }}'.</p>
+    <p>No keys found in database '{{ db_name }}'.</p>
 {% endif %}
 {% endblock %}

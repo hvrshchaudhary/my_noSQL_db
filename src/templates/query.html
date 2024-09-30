@@ -4,6 +4,7 @@
 
 {% block content %}
 <h2>Query Database: {{ db_name }}</h2>
+
 <form method="post" action="{{ url_for('database', db_name=db_name) }}?action=query">
     <div class="form-group">
         <label for="field">Field:</label>
